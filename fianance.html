@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Finance</title>
+
+  <style>
+.container {
+  max-width: 750px;
+  margin: auto;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  padding: 25px;
+  background: linear-gradient(135deg, #73BDC9, #5660CC);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  color: white;
+  animation: fadeIn 0.8s ease;
+}
+
+/* Inputs + buttons */
+
+input,
+button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+input {
+  background: #ffffff;
+  color: black;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 0 8px #00eaff;
+  transform: scale(1.02);
+}
+
+/* Button style */
+
+button {
+  cursor: pointer;
+  background: linear-gradient(45deg, #ff512f, #dd2476);
+  color: white;
+  font-weight: bold;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #ff4b2b;
+}
+
+/* Result text */
+
+.result {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #00ffcc;
+  font-size: 20px;
+}
+
+/* Pie chart */
+
+.chart-container {
+  margin: 40px auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  border: 5px solid white;
+  transition: 0.5s;
+}
+
+/* Legend */
+
+.legend {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* Colors */
+
+.color-mortgage {
+  background-color: #9c27b0;
+}
+
+.color-propertytax {
+  background-color: #ffc107;
+}
+
+.color-insurance {
+  background-color: #4caf50;
+}
+
+.color-utilities {
+  background-color: #2196f3;
+}
+
+.color-maintenance {
+  background-color: #ff10f0;
+}
+
+/* Bar chart */
+
+.chart {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bar {
+  height: 32px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  width: 0;
+  transition: width 0.6s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.mortgage { background-color: #9c27b0; }
+.propertyTax { background-color: #ffc107; color: black; }
+.insurance { background-color: #4caf50; }
+.utilities { background-color: #2196f3; }
+.maintenance { background-color: #ff10f0; }
+
+/* Animation */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Housing Finance Calculator</h2>
+
+    <input type="number" id="mortgage" placeholder="Monthly mortgage ($)" />
+    <input type="number" id="propertyTax" placeholder="Property tax ($)" />
+    <input type="number" id="insurance" placeholder="Homeowner insurance ($)" />
+    <input type="number" id="utilities" placeholder="Utilities ($)" />
+    <input type="number" id="maintenance" placeholder="Maintenance ($)" />
+
+    <button onclick="finance101()">Check it out</button>
+
+    <div id="result" class="result"></div>
+
+    <div id="chart" class="chart-container"></div>
+
+    <div class="legend" id="legend" style="display:none;">
+      <div class="legend-item">
+        <div class="legend-color color-mortgage"></div> Mortgage
+      </div>
+      <div class="legend-item">
+        <div class="legend-color color-propertytax"></div> Property Tax
+      </div>
+      <div class="legend-item">
+        <div class="legend-color color-insurance"></div> Insurance
+      </div>
+      <div class="legend-item">
+        <div class="legend-color color-utilities"></div> Utilities
+      </div>
+      <div class="legend-item">
+        <div class="legend-color color-maintenance"></div> Maintenance
+      </div>
+    </div>
+
+    <button onclick="window.location.href='index.html'">Go Back</button>
+    
+    <div class="chart">
+      <div class="mortage"></div>
+      <div class="propertyTax"></div>
+      <div class="insurance"></div>
+      <div class="utilities"></div>
+      <div class="maintenance"></div>
+    </div>
+  </div>
+
+  <script>
+    function finance101() {
+      const mortgage = Number(mortgageInput.value) || 0;
+      const propertyTax = Number(propertyTaxInput.value) || 0;
+      const insurance = Number(insuranceInput.value) || 0;
+      const utilities = Number(utilitiesInput.value) || 0;
+      const maintenance = Number(maintenanceInput.value) || 0;
+
+      const total =
+        mortgage + propertyTax + insurance + utilities + maintenance;
+
+      if (total === 0) {
+        result.textContent = "Please enter values.";
+        chart.style.background = "none";
+        legend.style.display = "none";
+        return;
+      }
+
+      // Convert to percentages
+      const mPct = (mortgage / total) * 100;
+      const tPct = (propertyTax / total) * 100;
+      const iPct = (insurance / total) * 100;
+      const uPct = (utilities / total) * 100;
+      const maPct = (maintenance / total) * 100;
+
+      result.textContent = `Total Monthly Cost: $${total.toFixed(2)}`;
+
+      // Show the legend
+      legend.style.display = "flex";
+
+      // Build dynamic pie chart
+      chart.style.background = `
+        conic-gradient(
+          #9C27B0 0% ${mPct}%,
+          #FFC107 ${mPct}% ${mPct + tPct}%,
+          #4CAF50 ${mPct + tPct}% ${mPct + tPct + iPct}%,
+          #2196F3 ${mPct + tPct + iPct}% ${mPct + tPct + iPct + uPct}%,
+          #FF10F0 ${mPct + tPct + iPct + uPct}% 100%
+        )
+      `;
+    }
+
+    // Cache elements
+
+    const mortgageInput = document.getElementById("mortgage");
+    const propertyTaxInput = document.getElementById("propertyTax");
+    const insuranceInput = document.getElementById("insurance");
+    const utilitiesInput = document.getElementById("utilities");
+    const maintenanceInput = document.getElementById("maintenance");
+    const result = document.getElementById("result");
+    const chart = document.getElementById("chart");
+    const legend = document.getElementById("legend");
+  </script>
+</body>
+</html>
